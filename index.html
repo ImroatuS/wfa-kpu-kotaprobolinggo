@@ -345,15 +345,13 @@
 
     async function daftarWajah() {
 
-      btnDaftar.disabled =
-        true;
-
+      btnDaftar.disabled = true;
+    
       status.textContent =
-        "Membaca karakteristik wajah...";
-
-
+        "Mencari wajah...";
+    
       try {
-
+    
         const hasil =
           await faceapi
             .detectSingleFace(
@@ -363,59 +361,69 @@
                 scoreThreshold: 0.5
               })
             )
-            .withFaceLandmarks()
-            .withFaceDescriptor();
-
-
+            .withFaceLandmarks();
+    
         if (!hasil) {
-
+    
           status.textContent =
             "Wajah tidak terbaca. Coba lagi.";
-
-          btnDaftar.disabled =
-            false;
-
+    
+          btnDaftar.disabled = false;
+    
           return;
-
+    
         }
-
-
+    
+        status.textContent =
+          "Wajah ditemukan. Membaca karakteristik...";
+    
+    
         const descriptor =
-          Array.from(
-            hasil.descriptor
+          await faceapi.computeFaceDescriptor(
+            hasil
           );
-
-
+    
+    
+        status.textContent =
+          "Menyimpan data wajah...";
+    
+    
+        const descriptorArray =
+          Array.from(descriptor);
+    
+    
         localStorage.setItem(
           "faceDescriptorTest",
-          JSON.stringify(descriptor)
+          JSON.stringify(descriptorArray)
         );
-
-
+    
+    
         status.textContent =
           "✓ WAJAH BERHASIL DIDAFTARKAN";
-
-
+    
+    
         console.log(
           "FACE DESCRIPTOR:",
-          descriptor
+          descriptorArray
         );
-
-
+    
+    
       }
-
+    
       catch (error) {
-
-        console.error(error);
-
+    
+        console.error(
+          "REGISTRASI ERROR:",
+          error
+        );
+    
         status.textContent =
-          "Gagal mendaftarkan wajah.";
-
-        btnDaftar.disabled =
-          false;
-
+          "Gagal: " + error.message;
+    
+        btnDaftar.disabled = false;
+    
       }
-
+    
     }
 
 
