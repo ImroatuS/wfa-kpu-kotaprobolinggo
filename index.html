@@ -371,21 +371,25 @@
           btnDaftar.disabled = false;
     
           return;
-    
         }
+    
     
         status.textContent =
           "Wajah ditemukan. Membaca karakteristik...";
     
     
         const descriptor =
-          await faceapi.computeFaceDescriptor(
-            hasil
-          );
+          await faceapi.computeFaceDescriptor(hasil);
+    
+    
+        console.log(
+          "DESCRIPTOR BERHASIL:",
+          descriptor
+        );
     
     
         status.textContent =
-          "Menyimpan data wajah...";
+          "Karakteristik wajah berhasil dibaca.";
     
     
         const descriptorArray =
@@ -398,14 +402,22 @@
         );
     
     
+        console.log(
+          "DESCRIPTOR TERSIMPAN:",
+          descriptorArray
+        );
+    
+    
         status.textContent =
           "✓ WAJAH BERHASIL DIDAFTARKAN";
     
     
-        console.log(
-          "FACE DESCRIPTOR:",
-          descriptorArray
-        );
+        btnDaftar.disabled =
+          false;
+    
+    
+        btnDaftar.textContent =
+          "✓ WAJAH SUDAH TERDAFTAR";
     
     
       }
@@ -417,10 +429,13 @@
           error
         );
     
+    
         status.textContent =
           "Gagal: " + error.message;
     
-        btnDaftar.disabled = false;
+    
+        btnDaftar.disabled =
+          false;
     
       }
     
