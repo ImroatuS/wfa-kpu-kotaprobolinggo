@@ -77,6 +77,10 @@
       cursor: not-allowed;
     }
 
+    button.berhasil {
+      background: #198754;
+    }
+
     #status {
       margin-top: 15px;
       font-weight: bold;
@@ -414,6 +418,10 @@
     
         btnDaftar.textContent =
           "✓ WAJAH SUDAH TERDAFTAR";
+        
+        btnDaftar.classList.add(
+          "berhasil"
+        );
     
     
       }
