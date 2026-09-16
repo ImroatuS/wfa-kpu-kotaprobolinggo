@@ -1,1 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
 
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Verifikasi Wajah WFA</title>
+
+  <style>
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f6f8;
+      margin: 0;
+      padding: 30px;
+      color: #333;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+    }
+
+    h1 {
+      color: #e31e24;
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      color: #777;
+      margin-bottom: 25px;
+    }
+
+    .camera-box {
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    video {
+      width: 100%;
+      max-width: 400px;
+      border-radius: 12px;
+      background: #111;
+      display: block;
+      margin: auto;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #e31e24;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+    }
+
+    #status {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>VERIFIKASI WAJAH</h1>
+
+    <div class="subtitle">
+      KPU Kota Probolinggo
+    </div>
+
+    <div class="camera-box">
+
+      <video
+        id="video"
+        autoplay
+        playsinline
+        muted
+      ></video>
+
+      <div id="status">
+        Kamera belum diaktifkan.
+      </div>
+
+      <button
+        id="btnKamera"
+        onclick="bukaKamera()"
+      >
+        📷 AKTIFKAN KAMERA
+      </button>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    let streamKamera = null;
+
+    async function bukaKamera() {
+
+      const video =
+        document.getElementById("video");
+
+      const status =
+        document.getElementById("status");
+
+      const tombol =
+        document.getElementById("btnKamera");
+
+      tombol.disabled = true;
+
+      status.textContent =
+        "Meminta izin kamera...";
+
+      try {
+
+        streamKamera =
+          await navigator.mediaDevices.getUserMedia({
+            video: {
+              facingMode: "user"
+            },
+            audio: false
+          });
+
+        video.srcObject =
+          streamKamera;
+
+        status.textContent =
+          "✓ KAMERA AKTIF";
+
+        tombol.textContent =
+          "✓ KAMERA AKTIF";
+
+      }
+
+      catch (error) {
+
+        console.error(error);
+
+        status.textContent =
+          "Kamera gagal: " +
+          error.name +
+          " | " +
+          error.message;
+
+        tombol.disabled = false;
+
+        tombol.textContent =
+          "📷 COBA LAGI";
+
+      }
+
+    }
+
+  </script>
+
+</body>
+
+</html>
