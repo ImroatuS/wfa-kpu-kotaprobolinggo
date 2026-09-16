@@ -152,55 +152,63 @@
     async function loadModel() {
 
       status.textContent =
-        "Memuat sistem deteksi wajah...";
-
+        "Memuat sistem...";
+    
       try {
-
+    
         const MODEL_URL = "./models";
-
-
+    
+    
+        status.textContent =
+          "Memuat model 1/3...";
+    
         await faceapi.nets.tinyFaceDetector.loadFromUri(
           MODEL_URL
         );
-
-
+    
+    
+        status.textContent =
+          "Memuat model 2/3...";
+    
         await faceapi.nets.faceLandmark68Net.loadFromUri(
           MODEL_URL
         );
-
-
+    
+    
+        status.textContent =
+          "Memuat model 3/3...";
+    
         await faceapi.nets.faceRecognitionNet.loadFromUri(
           MODEL_URL
         );
-
-
+    
+    
         status.textContent =
           "Sistem siap.";
-
+    
         btnKamera.disabled =
           false;
-
+    
         btnKamera.textContent =
           "📷 AKTIFKAN KAMERA";
-
+    
       }
-
+    
       catch (error) {
-
+    
         console.error(error);
-
+    
         status.textContent =
-          "Gagal memuat model wajah.";
-
+          "Gagal: " + error.message;
+    
         console.error(
           "MODEL ERROR:",
           error
         );
-
+    
       }
-
+    
     }
-
 
     // =====================================
     // BUKA KAMERA
