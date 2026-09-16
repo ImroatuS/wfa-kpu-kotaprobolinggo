@@ -10,9 +10,8 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>Verifikasi Wajah WFA</title>
+  <title>Registrasi Wajah WFA</title>
 
-  <!-- face-api.js -->
   <script
     src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js">
   </script>
@@ -90,7 +89,7 @@
 
   <div class="container">
 
-    <h1>VERIFIKASI WAJAH</h1>
+    <h1>REGISTRASI WAJAH</h1>
 
     <div class="subtitle">
       KPU Kota Probolinggo
@@ -117,9 +116,18 @@
         MEMUAT...
       </button>
 
+      <button
+        id="btnDaftar"
+        onclick="daftarWajah()"
+        style="display:none;"
+      >
+        DAFTARKAN WAJAH
+      </button>
+
     </div>
 
   </div>
+
 
   <script>
 
@@ -129,13 +137,16 @@
     const status =
       document.getElementById("status");
 
-    const tombol =
+    const btnKamera =
       document.getElementById("btnKamera");
 
+    const btnDaftar =
+      document.getElementById("btnDaftar");
 
-    // ==================================
-    // LOAD MODEL FACE DETECTOR
-    // ==================================
+
+    // =====================================
+    // LOAD MODEL
+    // =====================================
 
     async function loadModel() {
 
@@ -144,16 +155,32 @@
 
       try {
 
+        const MODEL_URL =
+          "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights";
+
+
         await faceapi.nets.tinyFaceDetector.loadFromUri(
-          "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights"
+          MODEL_URL
         );
+
+
+        await faceapi.nets.faceLandmark68Net.loadFromUri(
+          MODEL_URL
+        );
+
+
+        await faceapi.nets.faceRecognitionNet.loadFromUri(
+          MODEL_URL
+        );
+
 
         status.textContent =
           "Sistem siap.";
 
-        tombol.disabled = false;
+        btnKamera.disabled =
+          false;
 
-        tombol.textContent =
+        btnKamera.textContent =
           "📷 AKTIFKAN KAMERA";
 
       }
@@ -163,23 +190,26 @@
         console.error(error);
 
         status.textContent =
-          "Gagal memuat sistem deteksi wajah.";
+          "Gagal memuat model wajah.";
 
-        tombol.textContent =
-          "COBA MUAT ULANG";
+        console.error(
+          "MODEL ERROR:",
+          error
+        );
 
       }
 
     }
 
 
-    // ==================================
+    // =====================================
     // BUKA KAMERA
-    // ==================================
+    // =====================================
 
     async function bukaKamera() {
 
-      tombol.disabled = true;
+      btnKamera.disabled =
+        true;
 
       status.textContent =
         "Meminta izin kamera...";
@@ -188,22 +218,29 @@
 
         const stream =
           await navigator.mediaDevices.getUserMedia({
+
             video: {
               facingMode: "user"
             },
+
             audio: false
+
           });
+
 
         video.srcObject =
           stream;
 
-        status.textContent =
-          "Kamera aktif. Mencari wajah...";
 
-        tombol.style.display =
+        btnKamera.style.display =
           "none";
 
-        mulaiDeteksi();
+
+        status.textContent =
+          "Kamera aktif. Posisikan wajah di tengah.";
+
+
+        tungguWajah();
 
       }
 
@@ -215,9 +252,10 @@
           "Kamera gagal: " +
           error.name;
 
-        tombol.disabled = false;
+        btnKamera.disabled =
+          false;
 
-        tombol.textContent =
+        btnKamera.textContent =
           "📷 COBA LAGI";
 
       }
@@ -225,64 +263,156 @@
     }
 
 
-    // ==================================
-    // DETEKSI WAJAH
-    // ==================================
+    // =====================================
+    // TUNGGU SATU WAJAH
+    // =====================================
 
-    function mulaiDeteksi() {
+    function tungguWajah() {
 
-      setInterval(async function() {
+      const interval =
+        setInterval(async function() {
 
-        if (
-          video.readyState <
-          2
-        ) {
-          return;
-        }
-
-        const hasil =
-          await faceapi.detectAllFaces(
-            video,
-            new faceapi.TinyFaceDetectorOptions({
-              inputSize: 320,
-              scoreThreshold: 0.5
-            })
-          );
+          if (
+            video.readyState < 2
+          ) {
+            return;
+          }
 
 
-        if (
-          hasil.length === 0
-        ) {
+          const hasil =
+            await faceapi
+              .detectAllFaces(
+                video,
+                new faceapi.TinyFaceDetectorOptions({
+                  inputSize: 320,
+                  scoreThreshold: 0.5
+                })
+              )
+              .withFaceLandmarks();
 
-          status.textContent =
-            "👤 Wajah belum terdeteksi.";
 
-        }
+          if (
+            hasil.length === 0
+          ) {
 
-        else if (
-          hasil.length === 1
-        ) {
+            status.textContent =
+              "👤 Wajah belum terdeteksi.";
 
-          status.textContent =
-            "✓ WAJAH TERDETEKSI";
+            btnDaftar.style.display =
+              "none";
 
-        }
+          }
 
-        else {
+          else if (
+            hasil.length === 1
+          ) {
 
-          status.textContent =
-            "⚠ Terdeteksi lebih dari satu wajah.";
+            status.textContent =
+              "✓ Wajah terdeteksi. Siap didaftarkan.";
 
-        }
+            btnDaftar.style.display =
+              "block";
 
-      }, 500);
+          }
+
+          else {
+
+            status.textContent =
+              "⚠ Hanya boleh ada satu wajah.";
+
+            btnDaftar.style.display =
+              "none";
+
+          }
+
+        }, 500);
 
     }
 
 
-    // ==================================
-    // MULAI
-    // ==================================
+    // =====================================
+    // AMBIL FACE DESCRIPTOR
+    // =====================================
+
+    async function daftarWajah() {
+
+      btnDaftar.disabled =
+        true;
+
+      status.textContent =
+        "Membaca karakteristik wajah...";
+
+
+      try {
+
+        const hasil =
+          await faceapi
+            .detectSingleFace(
+              video,
+              new faceapi.TinyFaceDetectorOptions({
+                inputSize: 320,
+                scoreThreshold: 0.5
+              })
+            )
+            .withFaceLandmarks()
+            .withFaceDescriptor();
+
+
+        if (!hasil) {
+
+          status.textContent =
+            "Wajah tidak terbaca. Coba lagi.";
+
+          btnDaftar.disabled =
+            false;
+
+          return;
+
+        }
+
+
+        const descriptor =
+          Array.from(
+            hasil.descriptor
+          );
+
+
+        localStorage.setItem(
+          "faceDescriptorTest",
+          JSON.stringify(descriptor)
+        );
+
+
+        status.textContent =
+          "✓ WAJAH BERHASIL DIDAFTARKAN";
+
+
+        console.log(
+          "FACE DESCRIPTOR:",
+          descriptor
+        );
+
+
+      }
+
+      catch (error) {
+
+        console.error(error);
+
+        status.textContent =
+          "Gagal mendaftarkan wajah.";
+
+        btnDaftar.disabled =
+          false;
+
+      }
+
+    }
+
+
+    // =====================================
+    // START
+    // =====================================
 
     loadModel();
 
