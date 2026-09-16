@@ -129,6 +129,14 @@
         DAFTARKAN WAJAH
       </button>
 
+      <button
+        id="btnVerifikasi"
+        onclick="verifikasiWajah()"
+        style="display:none;"
+      >
+        🔐 VERIFIKASI WAJAH
+      </button>
+
     </div>
 
   </div>
@@ -422,6 +430,10 @@
         btnDaftar.classList.add(
           "berhasil"
         );
+
+        document
+          .getElementById("btnVerifikasi")
+          .style.display = "block";
     
     
       }
@@ -439,6 +451,141 @@
     
     
         btnDaftar.disabled =
+          false;
+    
+      }
+    
+    }
+
+    async function verifikasiWajah() {
+
+      const btnVerifikasi =
+        document.getElementById("btnVerifikasi");
+    
+      btnVerifikasi.disabled = true;
+    
+      status.textContent =
+        "Mencocokkan wajah...";
+    
+    
+      try {
+    
+        const dataTersimpan =
+          localStorage.getItem(
+            "faceDescriptorTest"
+          );
+    
+    
+        if (!dataTersimpan) {
+    
+          status.textContent =
+            "Belum ada wajah yang terdaftar.";
+    
+          btnVerifikasi.disabled = false;
+    
+          return;
+    
+        }
+    
+    
+        const descriptorTersimpan =
+          new Float32Array(
+            JSON.parse(dataTersimpan)
+          );
+    
+    
+        const videoElement =
+          document.getElementById("video");
+    
+    
+        const hasil =
+          await faceapi
+            .detectSingleFace(
+              videoElement,
+              new faceapi.TinyFaceDetectorOptions({
+                inputSize: 320,
+                scoreThreshold: 0.5
+              })
+            )
+            .withFaceLandmarks()
+            .withFaceDescriptor();
+    
+    
+        if (!hasil) {
+    
+          status.textContent =
+            "❌ Wajah tidak terdeteksi.";
+    
+          btnVerifikasi.disabled = false;
+    
+          return;
+    
+        }
+    
+    
+        const wajahTerdaftar =
+          new faceapi.LabeledFaceDescriptors(
+            "Wajah Terdaftar",
+            [descriptorTersimpan]
+          );
+    
+    
+        const faceMatcher =
+          new faceapi.FaceMatcher(
+            wajahTerdaftar,
+            0.6
+          );
+    
+    
+        const hasilCocok =
+          faceMatcher.findBestMatch(
+            hasil.descriptor
+          );
+    
+    
+        console.log(
+          "HASIL VERIFIKASI:",
+          hasilCocok
+        );
+    
+    
+        if (
+          hasilCocok.label !== "unknown"
+        ) {
+    
+          status.textContent =
+            "✓ WAJAH TERVERIFIKASI";
+    
+          btnVerifikasi.textContent =
+            "✓ WAJAH COCOK";
+    
+          btnVerifikasi.classList.add(
+            "berhasil"
+          );
+    
+        } else {
+    
+          status.textContent =
+            "✕ WAJAH TIDAK COCOK";
+    
+          btnVerifikasi.disabled =
+            false;
+    
+        }
+    
+      }
+    
+      catch (error) {
+    
+        console.error(
+          "VERIFIKASI ERROR:",
+          error
+        );
+    
+        status.textContent =
+          "Gagal: " + error.message;
+    
+        btnVerifikasi.disabled =
           false;
     
       }
