@@ -156,8 +156,7 @@
     
       try {
     
-        const MODEL_URL = "./models";
-        const RECOGNITION_MODEL_URL =
+        const MODEL_URL =
           "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights";
     
     
@@ -165,7 +164,7 @@
           "Memuat model 1/3...";
     
         await faceapi.nets.tinyFaceDetector.loadFromUri(
-          RECOGNITION_MODEL_URL
+          MODEL_URL
         );
     
     
