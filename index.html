@@ -348,7 +348,7 @@
       btnDaftar.disabled = true;
     
       status.textContent =
-        "Mencari wajah...";
+        "Membaca karakteristik wajah...";
     
       try {
     
@@ -361,50 +361,53 @@
                 scoreThreshold: 0.5
               })
             )
-            .withFaceLandmarks();
+            .withFaceLandmarks()
+            .withFaceDescriptor();
+    
+    
+        console.log(
+          "HASIL DETEKSI:",
+          hasil
+        );
+    
     
         if (!hasil) {
     
           status.textContent =
             "Wajah tidak terbaca. Coba lagi.";
     
-          btnDaftar.disabled = false;
+          btnDaftar.disabled =
+            false;
     
           return;
+    
         }
     
     
         status.textContent =
-          "Wajah ditemukan. Membaca karakteristik...";
+          "Wajah berhasil dibaca.";
     
     
         const descriptor =
-          await faceapi.computeFaceDescriptor(hasil);
+          Array.from(
+            hasil.descriptor
+          );
     
     
         console.log(
-          "DESCRIPTOR BERHASIL:",
+          "DESCRIPTOR:",
           descriptor
         );
     
     
-        status.textContent =
-          "Karakteristik wajah berhasil dibaca.";
-    
-    
-        const descriptorArray =
-          Array.from(descriptor);
-    
-    
         localStorage.setItem(
           "faceDescriptorTest",
-          JSON.stringify(descriptorArray)
+          JSON.stringify(descriptor)
         );
     
     
         console.log(
-          "DESCRIPTOR TERSIMPAN:",
-          descriptorArray
+          "DESCRIPTOR TERSIMPAN"
         );
     
     
