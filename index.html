@@ -352,10 +352,14 @@
     
       try {
     
+        const videoElement =
+          document.getElementById("video");
+    
+    
         const hasil =
           await faceapi
             .detectSingleFace(
-              video,
+              videoElement,
               new faceapi.TinyFaceDetectorOptions({
                 inputSize: 320,
                 scoreThreshold: 0.5
@@ -363,12 +367,6 @@
             )
             .withFaceLandmarks()
             .withFaceDescriptor();
-    
-    
-        console.log(
-          "HASIL DETEKSI:",
-          hasil
-        );
     
     
         if (!hasil) {
@@ -406,11 +404,6 @@
         );
     
     
-        console.log(
-          "DESCRIPTOR TERSIMPAN"
-        );
-    
-    
         status.textContent =
           "✓ WAJAH BERHASIL DIDAFTARKAN";
     
@@ -443,7 +436,6 @@
       }
     
     }
-
 
     // =====================================
     // START
