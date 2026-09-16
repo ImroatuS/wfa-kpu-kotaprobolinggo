@@ -12,6 +12,11 @@
 
   <title>Verifikasi Wajah WFA</title>
 
+  <!-- face-api.js -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js">
+  </script>
+
   <style>
 
     body {
@@ -101,14 +106,15 @@
       ></video>
 
       <div id="status">
-        Kamera belum diaktifkan.
+        Memuat sistem...
       </div>
 
       <button
         id="btnKamera"
         onclick="bukaKamera()"
+        disabled
       >
-        📷 AKTIFKAN KAMERA
+        MEMUAT...
       </button>
 
     </div>
@@ -117,18 +123,61 @@
 
   <script>
 
-    let streamKamera = null;
+    const video =
+      document.getElementById("video");
+
+    const status =
+      document.getElementById("status");
+
+    const tombol =
+      document.getElementById("btnKamera");
+
+
+    // ==================================
+    // LOAD MODEL FACE DETECTOR
+    // ==================================
+
+    async function loadModel() {
+
+      status.textContent =
+        "Memuat sistem deteksi wajah...";
+
+      try {
+
+        await faceapi.nets.tinyFaceDetector.loadFromUri(
+          "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights"
+        );
+
+        status.textContent =
+          "Sistem siap.";
+
+        tombol.disabled = false;
+
+        tombol.textContent =
+          "📷 AKTIFKAN KAMERA";
+
+      }
+
+      catch (error) {
+
+        console.error(error);
+
+        status.textContent =
+          "Gagal memuat sistem deteksi wajah.";
+
+        tombol.textContent =
+          "COBA MUAT ULANG";
+
+      }
+
+    }
+
+
+    // ==================================
+    // BUKA KAMERA
+    // ==================================
 
     async function bukaKamera() {
-
-      const video =
-        document.getElementById("video");
-
-      const status =
-        document.getElementById("status");
-
-      const tombol =
-        document.getElementById("btnKamera");
 
       tombol.disabled = true;
 
@@ -137,7 +186,7 @@
 
       try {
 
-        streamKamera =
+        const stream =
           await navigator.mediaDevices.getUserMedia({
             video: {
               facingMode: "user"
@@ -146,13 +195,15 @@
           });
 
         video.srcObject =
-          streamKamera;
+          stream;
 
         status.textContent =
-          "✓ KAMERA AKTIF";
+          "Kamera aktif. Mencari wajah...";
 
-        tombol.textContent =
-          "✓ KAMERA AKTIF";
+        tombol.style.display =
+          "none";
+
+        mulaiDeteksi();
 
       }
 
@@ -162,9 +213,7 @@
 
         status.textContent =
           "Kamera gagal: " +
-          error.name +
-          " | " +
-          error.message;
+          error.name;
 
         tombol.disabled = false;
 
@@ -174,6 +223,68 @@
       }
 
     }
+
+
+    // ==================================
+    // DETEKSI WAJAH
+    // ==================================
+
+    function mulaiDeteksi() {
+
+      setInterval(async function() {
+
+        if (
+          video.readyState <
+          2
+        ) {
+          return;
+        }
+
+        const hasil =
+          await faceapi.detectAllFaces(
+            video,
+            new faceapi.TinyFaceDetectorOptions({
+              inputSize: 320,
+              scoreThreshold: 0.5
+            })
+          );
+
+
+        if (
+          hasil.length === 0
+        ) {
+
+          status.textContent =
+            "👤 Wajah belum terdeteksi.";
+
+        }
+
+        else if (
+          hasil.length === 1
+        ) {
+
+          status.textContent =
+            "✓ WAJAH TERDETEKSI";
+
+        }
+
+        else {
+
+          status.textContent =
+            "⚠ Terdeteksi lebih dari satu wajah.";
+
+        }
+
+      }, 500);
+
+    }
+
+
+    // ==================================
+    // MULAI
+    // ==================================
+
+    loadModel();
 
   </script>
 
