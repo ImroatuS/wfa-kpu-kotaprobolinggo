@@ -156,6 +156,17 @@
     const btnDaftar =
       document.getElementById("btnDaftar");
 
+    const parameter =
+      new URLSearchParams(window.location.search);
+    
+    const emailPegawai =
+      parameter.get("email");
+    
+    console.log(
+      "Email pegawai:",
+      emailPegawai
+    );
+
 
     // =====================================
     // LOAD MODEL
@@ -410,11 +421,23 @@
         );
     
     
+        if (!emailPegawai) {
+
+          status.textContent =
+            "Email pegawai tidak ditemukan.";
+        
+          btnDaftar.disabled =
+            false;
+        
+          return;
+        
+        }
+        
         localStorage.setItem(
-          "faceDescriptorTest",
+          "faceDescriptor_" + emailPegawai,
           JSON.stringify(descriptor)
         );
-    
+            
     
         status.textContent =
           "✓ WAJAH BERHASIL DIDAFTARKAN";
@@ -470,11 +493,14 @@
     
       try {
     
+        const email =
+          prompt("Masukkan email pegawai:");
+        
         const dataTersimpan =
           localStorage.getItem(
-            "faceDescriptorTest"
+            "faceDescriptor_" + email
           );
-    
+            
     
         if (!dataTersimpan) {
     
