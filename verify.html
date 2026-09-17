@@ -129,6 +129,9 @@
     const emailPegawai =
       parameter.get("email");
 
+    const tokenVerifikasi =
+      parameter.get("token");
+
 
     document
       .getElementById("emailPegawai")
@@ -142,6 +145,22 @@
       "Email pegawai:",
       emailPegawai
     );
+
+    console.log(
+      "Token verifikasi:",
+      tokenVerifikasi
+    );
+    
+    if (!emailPegawai || !tokenVerifikasi) {
+    
+      status.textContent =
+        "Link verifikasi tidak valid.";
+    
+      throw new Error(
+        "Email atau token verifikasi tidak ditemukan."
+      );
+    
+    }
 
 
     let sudahTerverifikasi =
@@ -410,6 +429,10 @@
         "?email=" +
         encodeURIComponent(
           emailPegawai
+        ) +
+        "&token=" +
+        encodeURIComponent(
+          tokenVerifikasi
         ) +
         "&callback=" +
         encodeURIComponent(
