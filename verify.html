@@ -103,9 +103,10 @@
     </div>
 
   </div>
-
-
+  
   <script>
+
+    let sudahTerverifikasi = false;
 
     const video =
       document.getElementById("video");
@@ -316,13 +317,32 @@
           if (
             kecocokan.label !== "unknown"
           ) {
-
+          
             status.textContent =
               "✓ Wajah cocok";
-
+          
             hasilTeks.textContent =
               "✓ WAJAH TERVERIFIKASI";
-
+          
+          
+            if (!sudahTerverifikasi) {
+          
+              sudahTerverifikasi = true;
+          
+          
+              if (window.opener) {
+          
+                window.opener.postMessage(
+                  {
+                    type: "FACE_VERIFIED"
+                  },
+                  "*"
+                );
+          
+              }
+          
+            }
+          
           }
 
           else {
