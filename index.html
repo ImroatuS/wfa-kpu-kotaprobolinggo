@@ -100,6 +100,15 @@
       KPU Kota Probolinggo
     </div>
 
+    <div
+      id="emailPegawai"
+      style="
+        margin-bottom: 20px;
+        font-size: 13px;
+        color: #777;
+      "
+    ></div>
+
     <div class="camera-box">
 
       <video
@@ -161,6 +170,12 @@
     
     const emailPegawai =
       parameter.get("email");
+
+    document.getElementById("emailPegawai")
+      .textContent =
+      emailPegawai
+        ? "Akun: " + emailPegawai
+        : "Akun tidak ditemukan";
     
     console.log(
       "Email pegawai:",
@@ -493,12 +508,9 @@
     
       try {
     
-        const email =
-          prompt("Masukkan email pegawai:");
-        
         const dataTersimpan =
           localStorage.getItem(
-            "faceDescriptor_" + email
+            "faceDescriptor_" + emailPegawai
           );
             
     
