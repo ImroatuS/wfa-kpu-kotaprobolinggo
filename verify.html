@@ -151,16 +151,7 @@
       tokenVerifikasi
     );
     
-    if (!emailPegawai || !tokenVerifikasi) {
     
-      status.textContent =
-        "Link verifikasi tidak valid.";
-    
-      throw new Error(
-        "Email atau token verifikasi tidak ditemukan."
-      );
-    
-    }
 
 
     let sudahTerverifikasi =
@@ -310,12 +301,25 @@
     function ambilDescriptorDariServer() {
 
       if (!emailPegawai) {
-
+    
         status.textContent =
           "Email pegawai tidak ditemukan.";
-
+    
         return;
-
+    
+      }
+    
+      if (!tokenVerifikasi) {
+    
+        status.textContent =
+          "Link verifikasi tidak valid.";
+    
+        console.error(
+          "Token verifikasi tidak ditemukan."
+        );
+    
+        return;
+    
       }
 
 
