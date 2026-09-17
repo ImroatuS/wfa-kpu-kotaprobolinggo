@@ -106,6 +106,17 @@
   
   <script>
 
+    const parameter =
+      new URLSearchParams(window.location.search);
+    
+    const emailPegawai =
+      parameter.get("email");
+    
+    console.log(
+      "Email pegawai:",
+      emailPegawai
+    );
+
     let sudahTerverifikasi = false;
 
     const video =
