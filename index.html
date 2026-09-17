@@ -142,7 +142,12 @@
 
   </div>
 
-    <form
+
+  <!-- =====================================
+       FORM KIRIM DATA WAJAH
+       ===================================== -->
+
+  <form
     id="formSimpanWajah"
     method="POST"
     action="https://script.google.com/macros/s/AKfycbzjv57BO6fvklm9gjY9VPlV4pMgtJeejMEFGUCN6Vw1LZ6RoVLOEzVd--hHho2-fwff/exec"
@@ -163,6 +168,7 @@
     >
 
   </form>
+
 
   <iframe
     name="frameSimpanWajah"
@@ -392,7 +398,9 @@
           if (
             video.readyState < 2
           ) {
+
             return;
+
           }
 
 
@@ -581,7 +589,9 @@
         document
           .getElementById("inputDescriptor")
           .value =
-            JSON.stringify(descriptor);
+            JSON.stringify(
+              descriptor
+            );
 
 
         document
@@ -589,7 +599,10 @@
           .submit();
 
 
-        // Tunggu proses penyimpanan
+        // =================================
+        // TUNGGU PROSES PENYIMPANAN
+        // =================================
+
         setTimeout(
           function() {
 
@@ -611,59 +624,11 @@
 
 
             console.log(
-              "✓ Data wajah dikirim ke Google Sheets"
+              "✓ Face descriptor tersimpan di Google Sheets"
             );
 
           },
           2000
-        );
-
-
-        console.log(
-          "RESPONSE APPS SCRIPT:",
-          result
-        );
-
-
-        // =================================
-        // CEK HASIL
-        // =================================
-
-        if (
-          !result.success
-        ) {
-
-          throw new Error(
-            result.error ||
-            "Face descriptor gagal disimpan."
-          );
-
-        }
-
-
-        // =================================
-        // BERHASIL
-        // =================================
-
-        status.textContent =
-          "✓ WAJAH BERHASIL DIDAFTARKAN";
-
-
-        btnDaftar.disabled =
-          true;
-
-
-        btnDaftar.textContent =
-          "✓ WAJAH SUDAH TERDAFTAR";
-
-
-        btnDaftar.classList.add(
-          "berhasil"
-        );
-
-
-        console.log(
-          "✓ Face descriptor tersimpan di Google Sheets"
         );
 
       }
