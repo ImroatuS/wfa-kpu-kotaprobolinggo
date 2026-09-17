@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="id">
 
@@ -145,6 +146,18 @@
 
   <script>
 
+    // =====================================
+    // KONFIGURASI
+    // =====================================
+
+    const APPS_SCRIPT_URL =
+      "https://script.google.com/macros/s/AKfycbzjv57BO6fvklm9gjY9VPlV4pMgtJeejMEFGUCN6Vw1LZ6RoVLOEzVd--hHho2-fwff/exec";
+
+
+    // =====================================
+    // ELEMENT
+    // =====================================
+
     const video =
       document.getElementById("video");
 
@@ -157,18 +170,29 @@
     const btnDaftar =
       document.getElementById("btnDaftar");
 
+
+    // =====================================
+    // AMBIL EMAIL DARI URL
+    // =====================================
+
     const parameter =
-      new URLSearchParams(window.location.search);
-    
+      new URLSearchParams(
+        window.location.search
+      );
+
+
     const emailPegawai =
       parameter.get("email");
 
-    document.getElementById("emailPegawai")
+
+    document
+      .getElementById("emailPegawai")
       .textContent =
-      emailPegawai
-        ? "Akun: " + emailPegawai
-        : "Akun tidak ditemukan";
-    
+        emailPegawai
+          ? "Akun: " + emailPegawai
+          : "Akun tidak ditemukan";
+
+
     console.log(
       "Email pegawai:",
       emailPegawai
@@ -183,63 +207,81 @@
 
       status.textContent =
         "Memuat sistem...";
-    
+
+
       try {
-    
+
         const MODEL_URL =
           "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights";
-    
-    
+
+
         status.textContent =
           "Memuat model 1/3...";
-    
-        await faceapi.nets.tinyFaceDetector.loadFromUri(
-          MODEL_URL
-        );
-    
-    
+
+
+        await faceapi.nets
+          .tinyFaceDetector
+          .loadFromUri(
+            MODEL_URL
+          );
+
+
         status.textContent =
           "Memuat model 2/3...";
-    
-        await faceapi.nets.faceLandmark68Net.loadFromUri(
-          MODEL_URL
-        );
-    
-    
+
+
+        await faceapi.nets
+          .faceLandmark68Net
+          .loadFromUri(
+            MODEL_URL
+          );
+
+
         status.textContent =
           "Memuat model 3/3...";
-    
-        await faceapi.nets.faceRecognitionNet.loadFromUri(
-          MODEL_URL
-        );
-    
-    
+
+
+        await faceapi.nets
+          .faceRecognitionNet
+          .loadFromUri(
+            MODEL_URL
+          );
+
+
         status.textContent =
           "Sistem siap.";
-    
+
+
         btnKamera.disabled =
           false;
-    
+
+
         btnKamera.textContent =
           "📷 AKTIFKAN KAMERA";
-    
+
       }
-    
+
       catch (error) {
-    
-        console.error(error);
-    
+
+        console.error(
+          error
+        );
+
+
         status.textContent =
-          "Gagal: " + error.message;
-    
+          "Gagal: " +
+          error.message;
+
+
         console.error(
           "MODEL ERROR:",
           error
         );
-    
+
       }
-    
+
     }
+
 
     // =====================================
     // BUKA KAMERA
@@ -250,21 +292,25 @@
       btnKamera.disabled =
         true;
 
+
       status.textContent =
         "Meminta izin kamera...";
+
 
       try {
 
         const stream =
-          await navigator.mediaDevices.getUserMedia({
+          await navigator
+            .mediaDevices
+            .getUserMedia({
 
-            video: {
-              facingMode: "user"
-            },
+              video: {
+                facingMode: "user"
+              },
 
-            audio: false
+              audio: false
 
-          });
+            });
 
 
         video.srcObject =
@@ -285,14 +331,19 @@
 
       catch (error) {
 
-        console.error(error);
+        console.error(
+          error
+        );
+
 
         status.textContent =
           "Kamera gagal: " +
           error.name;
 
+
         btnKamera.disabled =
           false;
+
 
         btnKamera.textContent =
           "📷 COBA LAGI";
@@ -308,8 +359,8 @@
 
     function tungguWajah() {
 
-      const interval =
-        setInterval(async function() {
+      setInterval(
+        async function() {
 
           if (
             video.readyState < 2
@@ -318,174 +369,288 @@
           }
 
 
-          const hasil =
-            await faceapi
-              .detectAllFaces(
-                video,
-                new faceapi.TinyFaceDetectorOptions({
-                  inputSize: 320,
-                  scoreThreshold: 0.5
-                })
-              )
-              .withFaceLandmarks();
+          try {
+
+            const hasil =
+              await faceapi
+                .detectAllFaces(
+                  video,
+                  new faceapi
+                    .TinyFaceDetectorOptions({
+                      inputSize: 320,
+                      scoreThreshold: 0.5
+                    })
+                )
+                .withFaceLandmarks();
 
 
-          if (
-            hasil.length === 0
-          ) {
+            // =================================
+            // TIDAK ADA WAJAH
+            // =================================
 
-            status.textContent =
-              "👤 Wajah belum terdeteksi.";
+            if (
+              hasil.length === 0
+            ) {
 
-            btnDaftar.style.display =
-              "none";
+              status.textContent =
+                "👤 Wajah belum terdeteksi.";
+
+
+              btnDaftar.style.display =
+                "none";
+
+            }
+
+
+            // =================================
+            // SATU WAJAH
+            // =================================
+
+            else if (
+              hasil.length === 1
+            ) {
+
+              status.textContent =
+                "✓ Wajah terdeteksi. Siap didaftarkan.";
+
+
+              btnDaftar.style.display =
+                "block";
+
+            }
+
+
+            // =================================
+            // LEBIH DARI SATU WAJAH
+            // =================================
+
+            else {
+
+              status.textContent =
+                "⚠ Hanya boleh ada satu wajah.";
+
+
+              btnDaftar.style.display =
+                "none";
+
+            }
 
           }
 
-          else if (
-            hasil.length === 1
-          ) {
+          catch (error) {
 
-            status.textContent =
-              "✓ Wajah terdeteksi. Siap didaftarkan.";
-
-            btnDaftar.style.display =
-              "block";
+            console.error(
+              "DETECTION ERROR:",
+              error
+            );
 
           }
 
-          else {
-
-            status.textContent =
-              "⚠ Hanya boleh ada satu wajah.";
-
-            btnDaftar.style.display =
-              "none";
-
-          }
-
-        }, 500);
+        },
+        500
+      );
 
     }
 
 
     // =====================================
-    // AMBIL FACE DESCRIPTOR
+    // DAFTARKAN WAJAH
     // =====================================
 
     async function daftarWajah() {
 
-      btnDaftar.disabled = true;
-    
+      btnDaftar.disabled =
+        true;
+
+
       status.textContent =
         "Membaca karakteristik wajah...";
-    
+
+
       try {
-    
-        const videoElement =
-          document.getElementById("video");
-    
-    
-        const hasil =
-          await faceapi
-            .detectSingleFace(
-              videoElement,
-              new faceapi.TinyFaceDetectorOptions({
-                inputSize: 320,
-                scoreThreshold: 0.5
-              })
-            )
-            .withFaceLandmarks()
-            .withFaceDescriptor();
-    
-    
-        if (!hasil) {
-    
-          status.textContent =
-            "Wajah tidak terbaca. Coba lagi.";
-    
-          btnDaftar.disabled =
-            false;
-    
-          return;
-    
-        }
-    
-    
-        status.textContent =
-          "Wajah berhasil dibaca.";
-    
-    
-        const descriptor =
-          Array.from(
-            hasil.descriptor
-          );
-    
-    
-        console.log(
-          "DESCRIPTOR:",
-          descriptor
-        );
-    
-    
+
+        // =================================
+        // CEK EMAIL
+        // =================================
+
         if (!emailPegawai) {
 
           status.textContent =
             "Email pegawai tidak ditemukan.";
-        
+
+
           btnDaftar.disabled =
             false;
-        
+
+
           return;
-        
+
         }
-        
-        localStorage.setItem(
-          "faceDescriptor_" + emailPegawai,
-          JSON.stringify(descriptor)
+
+
+        // =================================
+        // AMBIL FACE DESCRIPTOR
+        // =================================
+
+        const hasil =
+          await faceapi
+            .detectSingleFace(
+              video,
+              new faceapi
+                .TinyFaceDetectorOptions({
+                  inputSize: 320,
+                  scoreThreshold: 0.5
+                })
+            )
+            .withFaceLandmarks()
+            .withFaceDescriptor();
+
+
+        if (!hasil) {
+
+          status.textContent =
+            "Wajah tidak terbaca. Coba lagi.";
+
+
+          btnDaftar.disabled =
+            false;
+
+
+          return;
+
+        }
+
+
+        // =================================
+        // UBAH DESCRIPTOR MENJADI ARRAY
+        // =================================
+
+        const descriptor =
+          Array.from(
+            hasil.descriptor
+          );
+
+
+        console.log(
+          "DESCRIPTOR:",
+          descriptor
         );
-            
-    
+
+
+        // =================================
+        // KIRIM KE APPS SCRIPT
+        // =================================
+
+        status.textContent =
+          "Menyimpan data wajah...";
+
+
+        const response =
+          await fetch(
+            APPS_SCRIPT_URL,
+            {
+
+              method: "POST",
+
+              headers: {
+
+                "Content-Type":
+                  "text/plain;charset=utf-8"
+
+              },
+
+              body:
+                JSON.stringify({
+
+                  email:
+                    emailPegawai,
+
+                  descriptor:
+                    descriptor
+
+                })
+
+            }
+          );
+
+
+        // =================================
+        // BACA RESPONSE
+        // =================================
+
+        const result =
+          await response.json();
+
+
+        console.log(
+          "RESPONSE APPS SCRIPT:",
+          result
+        );
+
+
+        // =================================
+        // CEK HASIL
+        // =================================
+
+        if (
+          !result.success
+        ) {
+
+          throw new Error(
+            result.error ||
+            "Face descriptor gagal disimpan."
+          );
+
+        }
+
+
+        // =================================
+        // BERHASIL
+        // =================================
+
         status.textContent =
           "✓ WAJAH BERHASIL DIDAFTARKAN";
-    
-    
+
+
         btnDaftar.disabled =
-          false;
-    
-    
+          true;
+
+
         btnDaftar.textContent =
           "✓ WAJAH SUDAH TERDAFTAR";
-        
+
+
         btnDaftar.classList.add(
           "berhasil"
         );
 
-        document
-          .getElementById("btnVerifikasi")
-          .style.display = "block";
-    
-    
+
+        console.log(
+          "✓ Face descriptor tersimpan di Google Sheets"
+        );
+
       }
-    
+
       catch (error) {
-    
+
         console.error(
           "REGISTRASI ERROR:",
           error
         );
-    
-    
+
+
         status.textContent =
-          "Gagal: " + error.message;
-    
-    
+          "Gagal menyimpan wajah: " +
+          error.message;
+
+
         btnDaftar.disabled =
           false;
-    
+
       }
-    
+
     }
+
 
     // =====================================
     // START
@@ -498,3 +663,4 @@
 </body>
 
 </html>
+```
