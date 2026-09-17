@@ -84,6 +84,15 @@
     <div class="subtitle">
       KPU Kota Probolinggo
     </div>
+    
+    <div
+      id="emailPegawai"
+      style="
+        margin-bottom: 20px;
+        font-size: 13px;
+        color: #777;
+      "
+    ></div>
 
     <div class="camera-box">
 
@@ -111,6 +120,12 @@
     
     const emailPegawai =
       parameter.get("email");
+
+    document.getElementById("emailPegawai")
+      .textContent =
+      emailPegawai
+        ? "Akun: " + emailPegawai
+        : "Akun tidak ditemukan";
     
     console.log(
       "Email pegawai:",
